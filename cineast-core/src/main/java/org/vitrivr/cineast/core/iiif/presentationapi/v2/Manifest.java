@@ -50,6 +50,8 @@ public class Manifest {
   private String within;
   @JsonProperty
   private List<Structure> structures;
+  @JsonProperty
+  private List<Sequence> sequences;
 
   public Manifest() {
   }
@@ -206,6 +208,14 @@ public class Manifest {
     this.structures = structures;
   }
 
+  public List<Sequence> getSequences() {
+    return sequences;
+  }
+
+  public void setSequences(List<Sequence> sequences) {
+    this.sequences = sequences;
+  }
+
   @Override
   public String toString() {
     return "Manifest{" +
@@ -228,6 +238,7 @@ public class Manifest {
         ", rendering=" + rendering +
         ", within='" + within + '\'' +
         ", structures=" + structures +
+        ", sequences=" + sequences +
         '}';
   }
 }
