@@ -39,6 +39,18 @@ public class ImageRequest {
     this.extension = extension;
   }
 
+  public static ImageRequest fromUrl(String url) {
+    ImageRequest imageRequest = new ImageRequest();
+    String[] split = url.split("/");
+    imageRequest.setRegion(split[split.length - 4]);
+    imageRequest.setSize(split[split.length - 3]);
+    imageRequest.setRotation(split[split.length - 2]);
+    String[] qualityDotFormat = split[split.length - 1].split("\\.");
+    imageRequest.setQuality(qualityDotFormat[0]);
+    imageRequest.setExtension(qualityDotFormat[1]);
+    return imageRequest;
+  }
+
   /**
    * Percent encodes "/","?","#","[","]","@" and "%" to their corresponding ASCII reserved characters
    */
@@ -132,8 +144,8 @@ public class ImageRequest {
         + percentEncode(extension);
   }
 
-  public void saveToFile(String filePath, String fileName) throws IOException {
-    URL url = new URL(this.generateIIIFRequestUrl());
+  public void saveToFile(String filePath, String fileName, String requestUrl) throws IOException {
+    URL url = new URL(requestUrl != null ? requestUrl : this.generateIIIFRequestUrl());
     BufferedImage img = ImageIO.read(url);
     File file = new File(filePath + "/" + fileName + "." + this.getExtension());
     ImageIO.write(img, this.getExtension(), file);

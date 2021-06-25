@@ -15,7 +15,7 @@ public class IIIFConfig {
 
   @JsonProperty
   private String imageApiVersion;
-  @JsonProperty(value = "url", required = true)
+  @JsonProperty(value = "imageApiUrl")
   private String baseUrl;
   @JsonProperty
   private String region;
@@ -29,6 +29,16 @@ public class IIIFConfig {
   private String format;
   @JsonProperty("items")
   private List<IIIFItem> iiifItems;
+  @JsonProperty
+  private String manifestUrl;
+
+  public String getManifestUrl() {
+    return manifestUrl;
+  }
+
+  public void setManifestUrl(String manifestUrl) {
+    this.manifestUrl = manifestUrl;
+  }
 
   public ImageApiVersion getImageApiVersion() {
     if (imageApiVersion == null) {
@@ -51,7 +61,7 @@ public class IIIFConfig {
     return this.baseUrl;
   }
 
-  @JsonProperty(value = "url", required = true)
+  @JsonProperty(value = "imageApiUrl", required = true)
   public void setBaseUrl(final String baseUrl) {
     this.baseUrl = baseUrl;
   }

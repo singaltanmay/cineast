@@ -1,13 +1,15 @@
-package org.vitrivr.cineast.core.iiif.presentationapi.v2;
+package org.vitrivr.cineast.core.iiif.presentationapi.v2.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *   @author singaltanmay
- *   @version 1.0
- *   @created 23.06.21
+ * @author singaltanmay
+ * @version 1.0
+ * @created 23.06.21
  */
-class Thumbnail {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Resource {
 
   @JsonProperty("@id")
   private String atId;
@@ -16,9 +18,13 @@ class Thumbnail {
   @JsonProperty
   private String format;
   @JsonProperty
+  private long width;
+  @JsonProperty
+  private long height;
+  @JsonProperty
   private Service service;
 
-  public Thumbnail() {
+  public Resource() {
   }
 
   public String getAtId() {
@@ -45,6 +51,22 @@ class Thumbnail {
     this.format = format;
   }
 
+  public long getWidth() {
+    return width;
+  }
+
+  public void setWidth(long width) {
+    this.width = width;
+  }
+
+  public long getHeight() {
+    return height;
+  }
+
+  public void setHeight(long height) {
+    this.height = height;
+  }
+
   public Service getService() {
     return service;
   }
@@ -55,12 +77,13 @@ class Thumbnail {
 
   @Override
   public String toString() {
-    return "Thumbnail{" +
+    return "Resource{" +
         "atId='" + atId + '\'' +
         ", atType='" + atType + '\'' +
         ", format='" + format + '\'' +
+        ", width=" + width +
+        ", height=" + height +
         ", service=" + service +
         '}';
   }
-
 }

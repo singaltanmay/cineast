@@ -1,25 +1,26 @@
-package org.vitrivr.cineast.core.iiif.presentationapi.v2;
+package org.vitrivr.cineast.core.iiif.presentationapi.v2.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
 
 /**
  * @author singaltanmay
  * @version 1.0
  * @created 23.06.21
  */
-public class Sequence {
+@JsonIgnoreProperties(ignoreUnknown = true)
+class Thumbnail {
 
   @JsonProperty("@id")
   private String atId;
   @JsonProperty("@type")
   private String atType;
   @JsonProperty
-  private String label;
+  private String format;
   @JsonProperty
-  private List<Canvas> canvases;
+  private Service service;
 
-  public Sequence() {
+  public Thumbnail() {
   }
 
   public String getAtId() {
@@ -38,29 +39,30 @@ public class Sequence {
     this.atType = atType;
   }
 
-  public String getLabel() {
-    return label;
+  public String getFormat() {
+    return format;
   }
 
-  public void setLabel(String label) {
-    this.label = label;
+  public void setFormat(String format) {
+    this.format = format;
   }
 
-  public List<Canvas> getCanvases() {
-    return canvases;
+  public Service getService() {
+    return service;
   }
 
-  public void setCanvases(List<Canvas> canvases) {
-    this.canvases = canvases;
+  public void setService(Service service) {
+    this.service = service;
   }
 
   @Override
   public String toString() {
-    return "Sequence{" +
+    return "Thumbnail{" +
         "atId='" + atId + '\'' +
         ", atType='" + atType + '\'' +
-        ", label='" + label + '\'' +
-        ", canvases=" + canvases +
+        ", format='" + format + '\'' +
+        ", service=" + service +
         '}';
   }
+
 }

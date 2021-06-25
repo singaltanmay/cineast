@@ -10,11 +10,18 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vitrivr.cineast.core.config.DatabaseConfig;
 import org.vitrivr.cineast.core.iiif.IIIFConfig;
+import org.vitrivr.cineast.core.iiif.imageapi.ImageRequest;
 import org.vitrivr.cineast.core.iiif.imageapi.ImageRequestFactory;
+import org.vitrivr.cineast.core.iiif.presentationapi.v2.ManifestRequest;
+import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Canvas;
+import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Image;
+import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Manifest;
+import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Sequence;
 import org.vitrivr.cineast.core.util.json.JacksonJsonProvider;
 import org.vitrivr.cineast.standalone.config.IngestConfig;
 import org.vitrivr.cineast.standalone.config.InputConfig;
@@ -116,7 +123,41 @@ public class ExtractionCommand implements Runnable {
     }
     final String jobDirectoryString = jobDirectory.toString();
     String itemPrefixString = "iiif_image_";
-    ImageRequestFactory imageRequestFactory = new ImageRequestFactory(iiifConfig);
-    imageRequestFactory.createImageRequests(jobDirectoryString, itemPrefixString);
+    String imageApiBaseUrl = iiifConfig.getBaseUrl();
+    if (imageApiBaseUrl != null && !imageApiBaseUrl.isEmpty()) {
+      ImageRequestFactory imageRequestFactory = new ImageRequestFactory(iiifConfig);
+      imageRequestFactory.createImageRequests(jobDirectoryString, itemPrefixString);
+    }
+    String manifestUrl = iiifConfig.getManifestUrl();
+    if (imageApiBaseUrl != null && !imageApiBaseUrl.isEmpty()) {
+      ManifestRequest manifestRequest = new ManifestRequest(manifestUrl);
+      Manifest manifest = manifestRequest.parseManifest(null);
+      List<Sequence> sequences = manifest != null ? manifest.getSequences() : null;
+      if (sequences != null && sequences.size() != 0) {
+        for (Sequence sequence : sequences) {
+          List<Canvas> canvases = sequence.getCanvases();
+          if (canvases != null && canvases.size() != 0) {
+            for (int i = 0; i < Math.min(5, canvases.size()); i++) {
+              final Canvas canvas = canvases.get(i);
+              List<Image> images = canvas.getImages();
+              if (images != null && images.size() != 0) {
+                final int canvasIndex = i;
+                images.forEach(image -> {
+                  String imageApiUrl = image.getResource().getAtId();
+                  ImageRequest imageRequest = ImageRequest.fromUrl(imageApiUrl);
+                  LOGGER.info("Trying to save image to file system: " + image);
+                  try {
+                    imageRequest.saveToFile(itemPrefixString, "manifest_image" + canvasIndex, imageApiUrl);
+                  } catch (IOException e) {
+                    LOGGER.error("Failed to save image to file system: " + image);
+                    e.printStackTrace();
+                  }
+                });
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

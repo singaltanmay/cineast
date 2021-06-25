@@ -1,5 +1,6 @@
-package org.vitrivr.cineast.core.iiif.presentationapi.v2;
+package org.vitrivr.cineast.core.iiif.presentationapi.v2.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -7,24 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @version 1.0
  * @created 23.06.21
  */
-class Service {
+@JsonIgnoreProperties(ignoreUnknown = true)
+class SeeAlso {
 
-  @JsonProperty("@context")
-  private String atContext;
   @JsonProperty("@id")
   private String atId;
   @JsonProperty
+  private String format;
+  @JsonProperty
   private String profile;
 
-  public Service() {
-  }
-
-  public String getAtContext() {
-    return atContext;
-  }
-
-  public void setAtContext(String atContext) {
-    this.atContext = atContext;
+  public SeeAlso() {
   }
 
   public String getAtId() {
@@ -33,6 +27,14 @@ class Service {
 
   public void setAtId(String atId) {
     this.atId = atId;
+  }
+
+  public String getFormat() {
+    return format;
+  }
+
+  public void setFormat(String format) {
+    this.format = format;
   }
 
   public String getProfile() {
@@ -45,9 +47,9 @@ class Service {
 
   @Override
   public String toString() {
-    return "Service{" +
-        "atContext='" + atContext + '\'' +
-        ", atId='" + atId + '\'' +
+    return "SeeAlso{" +
+        "atId='" + atId + '\'' +
+        ", format='" + format + '\'' +
         ", profile='" + profile + '\'' +
         '}';
   }

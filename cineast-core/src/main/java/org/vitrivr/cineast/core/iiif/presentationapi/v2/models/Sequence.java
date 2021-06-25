@@ -1,5 +1,6 @@
-package org.vitrivr.cineast.core.iiif.presentationapi.v2;
+package org.vitrivr.cineast.core.iiif.presentationapi.v2.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
@@ -8,7 +9,8 @@ import java.util.List;
  * @version 1.0
  * @created 23.06.21
  */
-public class Canvas {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Sequence {
 
   @JsonProperty("@id")
   private String atId;
@@ -17,13 +19,9 @@ public class Canvas {
   @JsonProperty
   private String label;
   @JsonProperty
-  private long width;
-  @JsonProperty
-  private long height;
-  @JsonProperty
-  private List<Image> images;
+  private List<Canvas> canvases;
 
-  public Canvas() {
+  public Sequence() {
   }
 
   public String getAtId() {
@@ -50,39 +48,21 @@ public class Canvas {
     this.label = label;
   }
 
-  public long getWidth() {
-    return width;
+  public List<Canvas> getCanvases() {
+    return canvases;
   }
 
-  public void setWidth(long width) {
-    this.width = width;
-  }
-
-  public long getHeight() {
-    return height;
-  }
-
-  public void setHeight(long height) {
-    this.height = height;
-  }
-
-  public List<Image> getImages() {
-    return images;
-  }
-
-  public void setImages(List<Image> images) {
-    this.images = images;
+  public void setCanvases(List<Canvas> canvases) {
+    this.canvases = canvases;
   }
 
   @Override
   public String toString() {
-    return "Canvas{" +
+    return "Sequence{" +
         "atId='" + atId + '\'' +
         ", atType='" + atType + '\'' +
         ", label='" + label + '\'' +
-        ", width=" + width +
-        ", height=" + height +
-        ", images=" + images +
+        ", canvases=" + canvases +
         '}';
   }
 }

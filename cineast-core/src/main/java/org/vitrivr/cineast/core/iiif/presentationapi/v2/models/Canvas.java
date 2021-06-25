@@ -1,28 +1,31 @@
-package org.vitrivr.cineast.core.iiif.presentationapi.v2;
+package org.vitrivr.cineast.core.iiif.presentationapi.v2.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
 /**
  * @author singaltanmay
  * @version 1.0
  * @created 23.06.21
  */
-public class Resource {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Canvas {
 
   @JsonProperty("@id")
   private String atId;
   @JsonProperty("@type")
   private String atType;
   @JsonProperty
-  private String format;
+  private String label;
   @JsonProperty
   private long width;
   @JsonProperty
   private long height;
   @JsonProperty
-  private Service service;
+  private List<Image> images;
 
-  public Resource() {
+  public Canvas() {
   }
 
   public String getAtId() {
@@ -41,12 +44,12 @@ public class Resource {
     this.atType = atType;
   }
 
-  public String getFormat() {
-    return format;
+  public String getLabel() {
+    return label;
   }
 
-  public void setFormat(String format) {
-    this.format = format;
+  public void setLabel(String label) {
+    this.label = label;
   }
 
   public long getWidth() {
@@ -65,23 +68,23 @@ public class Resource {
     this.height = height;
   }
 
-  public Service getService() {
-    return service;
+  public List<Image> getImages() {
+    return images;
   }
 
-  public void setService(Service service) {
-    this.service = service;
+  public void setImages(List<Image> images) {
+    this.images = images;
   }
 
   @Override
   public String toString() {
-    return "Resource{" +
+    return "Canvas{" +
         "atId='" + atId + '\'' +
         ", atType='" + atType + '\'' +
-        ", format='" + format + '\'' +
+        ", label='" + label + '\'' +
         ", width=" + width +
         ", height=" + height +
-        ", service=" + service +
+        ", images=" + images +
         '}';
   }
 }
