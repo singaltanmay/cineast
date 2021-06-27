@@ -147,7 +147,7 @@ public class ExtractionCommand implements Runnable {
                   ImageRequest imageRequest = ImageRequest.fromUrl(imageApiUrl);
                   LOGGER.info("Trying to save image to file system: " + image);
                   try {
-                    imageRequest.saveToFile(itemPrefixString, "manifest_image" + canvasIndex, imageApiUrl);
+                    imageRequest.saveToFile(jobDirectoryString, "manifest_image_" + canvasIndex, imageApiUrl);
                   } catch (IOException e) {
                     LOGGER.error("Failed to save image to file system: " + image);
                     e.printStackTrace();
