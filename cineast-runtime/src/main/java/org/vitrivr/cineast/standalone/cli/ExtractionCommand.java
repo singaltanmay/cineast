@@ -48,7 +48,9 @@ public class ExtractionCommand implements Runnable {
   @Option(name = {"-e", "--extraction"}, title = "Extraction config", description = "Path that points to a valid Cineast extraction config file.")
   private String extractionConfig;
 
-  /** Helper method to detect if the path in InputConfig is that of an IIIF job or the local filesystem */
+  /**
+   * Helper method to detect if the path in InputConfig is that of an IIIF job or the local filesystem
+   */
   public static boolean isURL(String url) {
     try {
       new URI(url);
@@ -112,7 +114,7 @@ public class ExtractionCommand implements Runnable {
   /**
    * Configures an IIIF extraction job by downloading all specified images from the server onto to the filesystem and pointing the {@link ExtractionContainerProvider} to that directory.
    *
-   * @param iiifConfig The IIIF config parsed as an {@link IIIFConfig}
+   * @param iiifConfig    The IIIF config parsed as an {@link IIIFConfig}
    * @param directoryPath The path where the downloaded IIIF content should be stored
    * @throws IOException Thrown if downloading or writing an image or it's associated information encounters an IOException
    */
@@ -152,6 +154,8 @@ public class ExtractionCommand implements Runnable {
                     LOGGER.error("Failed to save image to file system: " + image);
                     e.printStackTrace();
                   }
+                  String baseUrl = imageRequest.getBaseUrl();
+
                 });
               }
             }

@@ -164,7 +164,7 @@ public class ImageRequestFactory {
         }
 
         try {
-          imageRequest.saveToFile(jobDirectoryString, imageName, null);
+          imageRequest.saveToFile(jobDirectoryString, imageName);
         } catch (IOException e) {
           LOGGER.debug("Failed to save image: " + imageName);
           e.printStackTrace();
@@ -311,7 +311,7 @@ public class ImageRequestFactory {
         }
 
         try {
-          imageRequest.saveToFile(jobDirectoryString, imageName, null);
+          imageRequest.saveToFile(jobDirectoryString, imageName);
         } catch (IOException e) {
           LOGGER.debug("Failed to save image: " + imageName);
           e.printStackTrace();

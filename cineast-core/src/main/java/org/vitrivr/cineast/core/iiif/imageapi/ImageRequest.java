@@ -144,8 +144,12 @@ public class ImageRequest {
         + percentEncode(extension);
   }
 
+  public void saveToFile(String filePath, String fileName) throws IOException {
+    saveToFile(filePath, fileName, this.generateIIIFRequestUrl());
+  }
+
   public void saveToFile(String filePath, String fileName, String requestUrl) throws IOException {
-    URL url = new URL(requestUrl != null ? requestUrl : this.generateIIIFRequestUrl());
+    URL url = new URL(requestUrl);
     BufferedImage img = ImageIO.read(url);
     File file = new File(filePath + "/" + fileName + "." + this.getExtension());
     ImageIO.write(img, this.getExtension(), file);
