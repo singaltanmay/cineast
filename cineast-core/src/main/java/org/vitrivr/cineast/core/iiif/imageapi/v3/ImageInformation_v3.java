@@ -49,6 +49,7 @@ public class ImageInformation_v3 implements ImageInformation {
   public static final String SUPPORTS_SIZE_BY_WH = "sizeByWh";
   // Image sizes prefixed with ^ may be requested.
   public static final String SUPPORTS_SIZE_UPSCALING = "sizeUpscaling";
+
   /**
    * The @context tells Linked Data processors how to interpret the image information. If extensions are used then their context definitions should be included in this top-level @context property.
    */

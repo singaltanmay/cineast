@@ -68,6 +68,7 @@ public interface ImageInformation {
 
     @JsonProperty
     public Long width;
+
     @JsonProperty
     public Long height;
 

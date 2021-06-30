@@ -40,6 +40,7 @@ public class IIIFConfig {
     this.manifestUrl = manifestUrl;
   }
 
+
   public ImageApiVersion getImageApiVersion() {
     if (imageApiVersion == null) {
       throw new IllegalArgumentException("Image API Version is not defined!");

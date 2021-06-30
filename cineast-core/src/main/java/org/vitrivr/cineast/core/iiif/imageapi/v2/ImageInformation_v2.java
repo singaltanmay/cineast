@@ -60,6 +60,7 @@ public class ImageInformation_v2 implements ImageInformation {
   /**
    * A set of descriptions of the parameters to use to request regions of the image (tiles) that are efficient for the server to deliver. Each description gives a width, optionally a height for non-square tiles, and a set of scale factors at which tiles of those dimensions are available.
    */
+
   @JsonProperty
   private List<TilesItem> tiles;
   /**
@@ -92,6 +93,7 @@ public class ImageInformation_v2 implements ImageInformation {
   }
 
   /**
+
    * The maximum height in pixels supported for this image. Clients must not expect requests with a height greater than this value to be supported.
    */
   @JsonProperty
@@ -100,6 +102,7 @@ public class ImageInformation_v2 implements ImageInformation {
   }
 
   /**
+
    * Custom getter for getProfile that converts List<Object> into a Pair<String, List<ProfileItem>>
    */
   public Pair<String, List<ProfileItem>> getProfile() {
@@ -377,6 +380,7 @@ public class ImageInformation_v2 implements ImageInformation {
     public static final String SUPPORTS_SIZE_BY_WH_LISTED = "sizeByWhListed";
     @Deprecated
     public static final String SUPPORTS_SIZE_BY_FORCED_WH = "sizeByForcedWh";
+
     /**
      * List of operations that the server supports such as rotation, mirroring, regionSquare etc.
      */

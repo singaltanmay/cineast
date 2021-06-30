@@ -13,6 +13,7 @@ public class ImageApiVersion {
   public static final String IMAGE_API_VERSION_2_1_1_NUMERIC = "2.1.1";
   public static final String IMAGE_API_VERSION_3_0_COMPLIANCE_LEVEL_1 = "http://iiif.io/api/image/3/level1.json";
   public static final String IMAGE_API_VERSION_3_0_NUMERIC = "3.0";
+
   /**
    * Variable to hold the Image API version of this object
    */
@@ -96,7 +97,6 @@ public class ImageApiVersion {
   public IMAGE_API_VERSION getVersion() {
     return this.version;
   }
-
 
   /**
    * Enum to hold the various Image Api specification versions supported by the builder
