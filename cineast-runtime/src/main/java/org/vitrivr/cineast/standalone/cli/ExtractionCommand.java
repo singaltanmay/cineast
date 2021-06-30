@@ -18,6 +18,7 @@ import org.vitrivr.cineast.core.iiif.IIIFConfig;
 import org.vitrivr.cineast.core.iiif.imageapi.ImageRequest;
 import org.vitrivr.cineast.core.iiif.imageapi.ImageRequestFactory;
 import org.vitrivr.cineast.core.iiif.presentationapi.v2.ManifestRequest;
+import org.vitrivr.cineast.core.iiif.presentationapi.v2.MetadataJson;
 import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Canvas;
 import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Image;
 import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Manifest;
@@ -114,7 +115,7 @@ public class ExtractionCommand implements Runnable {
   /**
    * Configures an IIIF extraction job by downloading all specified images from the server onto to the filesystem and pointing the {@link ExtractionContainerProvider} to that directory.
    *
-   * @param iiifConfig    The IIIF config parsed as an {@link IIIFConfig}
+   * @param iiifConfig The IIIF config parsed as an {@link IIIFConfig}
    * @param directoryPath The path where the downloaded IIIF content should be stored
    * @throws IOException Thrown if downloading or writing an image or it's associated information encounters an IOException
    */
@@ -130,37 +131,53 @@ public class ExtractionCommand implements Runnable {
       ImageRequestFactory imageRequestFactory = new ImageRequestFactory(iiifConfig);
       imageRequestFactory.createImageRequests(jobDirectoryString, itemPrefixString);
     }
+    // Process Presentation API job
     String manifestUrl = iiifConfig.getManifestUrl();
     if (imageApiBaseUrl != null && !imageApiBaseUrl.isEmpty()) {
       ManifestRequest manifestRequest = new ManifestRequest(manifestUrl);
-      Manifest manifest = manifestRequest.parseManifest(null);
-      List<Sequence> sequences = manifest != null ? manifest.getSequences() : null;
-      if (sequences != null && sequences.size() != 0) {
-        for (Sequence sequence : sequences) {
-          List<Canvas> canvases = sequence.getCanvases();
-          if (canvases != null && canvases.size() != 0) {
-            for (int i = 0; i < Math.min(5, canvases.size()); i++) {
-              final Canvas canvas = canvases.get(i);
-              List<Image> images = canvas.getImages();
-              if (images != null && images.size() != 0) {
-                final int canvasIndex = i;
-                images.forEach(image -> {
-                  String imageApiUrl = image.getResource().getAtId();
-                  ImageRequest imageRequest = ImageRequest.fromUrl(imageApiUrl);
-                  LOGGER.info("Trying to save image to file system: " + image);
-                  try {
-                    imageRequest.saveToFile(jobDirectoryString, "manifest_image_" + canvasIndex, imageApiUrl);
-                  } catch (IOException e) {
-                    LOGGER.error("Failed to save image to file system: " + image);
-                    e.printStackTrace();
-                  }
-                  String baseUrl = imageRequest.getBaseUrl();
-
-                });
+      Manifest manifest = manifestRequest.parseManifest();
+      if (manifest != null) {
+        // Extract a simplified {@link MetadataJson} containing only essential metadata
+        MetadataJson metadataJson = new MetadataJson(manifest);
+        // Write MetadataJson to filesystem
+        try {
+          metadataJson.saveToFile(jobDirectoryString, "manifest_metadata.json");
+        } catch (IOException e) {
+          LOGGER.error("Failed to save manifest metadata JSON to filesystem");
+          e.printStackTrace();
+        }
+        List<Sequence> sequences = manifest.getSequences();
+        if (sequences != null && sequences.size() != 0) {
+          for (Sequence sequence : sequences) {
+            List<Canvas> canvases = sequence.getCanvases();
+            if (canvases != null && canvases.size() != 0) {
+              // TODO loop restricted to 5 images during development
+              for (int i = 0; i < Math.min(5, canvases.size()); i++) {
+                final Canvas canvas = canvases.get(i);
+                List<Image> images = canvas.getImages();
+                if (images != null && images.size() != 0) {
+                  final int canvasIndex = i;
+                  // Download all images in the canvas
+                  images.forEach(image -> {
+                    String imageApiUrl = image.getResource().getAtId();
+                    // Make image request to remote server
+                    ImageRequest imageRequest = ImageRequest.fromUrl(imageApiUrl);
+                    // Write the downloaded image to the filesystem
+                    LOGGER.info("Trying to save image to file system: " + image);
+                    try {
+                      imageRequest.saveToFile(jobDirectoryString, "manifest_image_" + canvasIndex, imageApiUrl);
+                    } catch (IOException e) {
+                      LOGGER.error("Failed to save image to file system: " + image);
+                      e.printStackTrace();
+                    }
+                  });
+                }
               }
             }
           }
         }
+      } else {
+        LOGGER.error("Null manifest received from the server. Url: " + manifestUrl);
       }
     }
   }

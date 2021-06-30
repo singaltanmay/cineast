@@ -23,8 +23,8 @@ import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Manifest;
 public class ManifestRequest {
 
   private static final Logger LOGGER = LogManager.getLogger();
-  private String manifestJSON;
-  private String url;
+  private final String manifestJSON;
+  private final String url;
 
   public ManifestRequest(String url) throws IOException {
     this.url = url;
@@ -40,6 +40,16 @@ public class ManifestRequest {
     connection.setRequestProperty("accept", "application/json");
     InputStream responseStream = connection.getInputStream();
     return IOUtils.toString(responseStream, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Parses the manifest into a {@link Manifest} object
+   *
+   * @return {@link Manifest}
+   */
+  @Nullable
+  public Manifest parseManifest() {
+    return parseManifest(this.manifestJSON);
   }
 
   /**
