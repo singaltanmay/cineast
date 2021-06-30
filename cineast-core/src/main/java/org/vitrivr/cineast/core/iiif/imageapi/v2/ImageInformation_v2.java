@@ -26,7 +26,7 @@ public class ImageInformation_v2 implements ImageInformation {
    * A list of profiles, indicated by either a URI or an object describing the features supported. The first entry in the list must be a compliance level URI.
    */
   @JsonProperty(required = true)
-  private List<Object> profile;
+  private Object profile;
   /**
    * The context document that describes the semantics of the terms used in the document. This must be the URI: http://iiif.io/api/image/2/context.json for version 2.1 of the IIIF Image API. This document allows the response to be interpreted as RDF, using the JSON-LD serialization.
    */
@@ -93,7 +93,6 @@ public class ImageInformation_v2 implements ImageInformation {
   }
 
   /**
-
    * The maximum height in pixels supported for this image. Clients must not expect requests with a height greater than this value to be supported.
    */
   @JsonProperty
@@ -102,28 +101,33 @@ public class ImageInformation_v2 implements ImageInformation {
   }
 
   /**
-
    * Custom getter for getProfile that converts List<Object> into a Pair<String, List<ProfileItem>>
    */
   public Pair<String, List<ProfileItem>> getProfile() {
-    final String apiLevelString = this.profile.size() < 1 ? null : ((String) this.profile.get(0));
-    final List<ProfileItem> profileItemList = new LinkedList<>();
-    for (int i = 1; i < this.profile.size(); i++) {
-      @SuppressWarnings("unchecked") final LinkedHashMap<String, ArrayList<String>> map = (LinkedHashMap<String, ArrayList<String>>) this.profile.get(i);
-      final ProfileItem profileItem = new ProfileItem();
-      profileItem.setSupports(map.getOrDefault("supports", new ArrayList<>()));
-      profileItem.setQualities(map.getOrDefault("qualities", new ArrayList<>()));
-      profileItem.setFormats(map.getOrDefault("formats", new ArrayList<>()));
-      profileItemList.add(profileItem);
+    if (this.profile instanceof List) {
+      List<Object> profile = (List<Object>) this.profile;
+      final String apiLevelString = profile.size() < 1 ? null : ((String) profile.get(0));
+      final List<ProfileItem> profileItemList = new LinkedList<>();
+      for (int i = 1; i < profile.size(); i++) {
+        final LinkedHashMap<String, ArrayList<String>> map = (LinkedHashMap<String, ArrayList<String>>) profile.get(i);
+        final ProfileItem profileItem = new ProfileItem();
+        profileItem.setSupports(map.getOrDefault("supports", new ArrayList<>()));
+        profileItem.setQualities(map.getOrDefault("qualities", new ArrayList<>()));
+        profileItem.setFormats(map.getOrDefault("formats", new ArrayList<>()));
+        profileItemList.add(profileItem);
+      }
+      return new Pair<>(apiLevelString, profileItemList);
+    } else if (this.profile instanceof String) {
+      return new Pair<>(((String) this.profile), null);
     }
-    return new Pair<>(apiLevelString, profileItemList);
+    return null;
   }
 
   /**
    * A list of profiles, indicated by either a URI or an object describing the features supported. The first entry in the list must be a compliance level URI.
    */
   @JsonProperty(required = true)
-  public void setProfile(final List<Object> profile) {
+  public void setProfile(Object profile) {
     this.profile = profile;
   }
 

@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.vitrivr.cineast.core.iiif.imageapi.ImageRequest;
+import org.vitrivr.cineast.core.iiif.imageapi.ImageRequestFactory;
 import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Canvas;
-import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Image;
 import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Manifest;
 import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Sequence;
 
@@ -46,33 +45,18 @@ public class ManifestFactory {
     }
   }
 
+  /**
+   * Save all images in the canvasses along with their image information JSONs
+   */
   public void saveAllCanvasImages(String jobDirectoryString, String filenamePrefix) {
     List<Sequence> sequences = manifest.getSequences();
     if (sequences != null && sequences.size() != 0) {
       for (Sequence sequence : sequences) {
         List<Canvas> canvases = sequence.getCanvases();
         if (canvases != null && canvases.size() != 0) {
-          // TODO loop restricted to 2 images during development
-          for (int i = 0; i < Math.min(2, canvases.size()); i++) {
-            final Canvas canvas = canvases.get(i);
-            List<Image> images = canvas.getImages();
-            if (images != null && images.size() != 0) {
-              final int canvasIndex = i;
-              // Download all images in the canvas
-              images.forEach(image -> {
-                String imageApiUrl = image.getResource().getAtId();
-                // Make image request to remote server
-                ImageRequest imageRequest = ImageRequest.fromUrl(imageApiUrl);
-                // Write the downloaded image to the filesystem
-                LOGGER.info("Trying to save image to file system: " + image);
-                try {
-                  imageRequest.saveToFile(jobDirectoryString, filenamePrefix + canvasIndex, imageApiUrl);
-                } catch (IOException e) {
-                  LOGGER.error("Failed to save image to file system: " + image);
-                  e.printStackTrace();
-                }
-              });
-            }
+          for (final Canvas canvas : canvases) {
+            ImageRequestFactory imageRequestFactory = new ImageRequestFactory(canvas);
+            imageRequestFactory.createImageRequests(jobDirectoryString, filenamePrefix);
           }
         }
       }

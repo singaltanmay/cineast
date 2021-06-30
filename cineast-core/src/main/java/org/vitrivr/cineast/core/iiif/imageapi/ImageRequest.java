@@ -48,6 +48,12 @@ public class ImageRequest {
     String[] qualityDotFormat = split[split.length - 1].split("\\.");
     imageRequest.setQuality(qualityDotFormat[0]);
     imageRequest.setExtension(qualityDotFormat[1]);
+    StringBuilder baseUrl = new StringBuilder();
+    for (int i = 0; i < split.length - 4; i++) {
+      baseUrl.append(split[i]).append("/");
+    }
+    imageRequest.setBaseUrl(baseUrl.toString());
+    LOGGER.info("ImageRequest parsed from url: " + imageRequest);
     return imageRequest;
   }
 
@@ -158,6 +164,13 @@ public class ImageRequest {
 
   @Override
   public String toString() {
-    return generateIIIFRequestUrl();
+    return "ImageRequest{" +
+        "baseUrl='" + baseUrl + '\'' +
+        ", region='" + region + '\'' +
+        ", size='" + size + '\'' +
+        ", rotation='" + rotation + '\'' +
+        ", quality='" + quality + '\'' +
+        ", extension='" + extension + '\'' +
+        '}';
   }
 }
