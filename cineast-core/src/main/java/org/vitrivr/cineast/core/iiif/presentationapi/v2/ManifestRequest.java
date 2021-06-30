@@ -87,4 +87,12 @@ public class ManifestRequest {
     fileOutputStream.close();
     LOGGER.debug("Manifest json response data written to file successfully");
   }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public String getManifestJSON() {
+    return manifestJSON;
+  }
 }

@@ -10,19 +10,12 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vitrivr.cineast.core.config.DatabaseConfig;
 import org.vitrivr.cineast.core.iiif.IIIFConfig;
-import org.vitrivr.cineast.core.iiif.imageapi.ImageRequest;
 import org.vitrivr.cineast.core.iiif.imageapi.ImageRequestFactory;
-import org.vitrivr.cineast.core.iiif.presentationapi.v2.ManifestRequest;
-import org.vitrivr.cineast.core.iiif.presentationapi.v2.MetadataJson;
-import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Canvas;
-import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Image;
-import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Manifest;
-import org.vitrivr.cineast.core.iiif.presentationapi.v2.models.Sequence;
+import org.vitrivr.cineast.core.iiif.presentationapi.v2.ManifestFactory;
 import org.vitrivr.cineast.core.util.json.JacksonJsonProvider;
 import org.vitrivr.cineast.standalone.config.IngestConfig;
 import org.vitrivr.cineast.standalone.config.InputConfig;
@@ -125,6 +118,7 @@ public class ExtractionCommand implements Runnable {
       Files.createDirectories(jobDirectory);
     }
     final String jobDirectoryString = jobDirectory.toString();
+    // Process Image API job
     String itemPrefixString = "iiif_image_";
     String imageApiBaseUrl = iiifConfig.getBaseUrl();
     if (imageApiBaseUrl != null && !imageApiBaseUrl.isEmpty()) {
@@ -133,51 +127,17 @@ public class ExtractionCommand implements Runnable {
     }
     // Process Presentation API job
     String manifestUrl = iiifConfig.getManifestUrl();
-    if (imageApiBaseUrl != null && !imageApiBaseUrl.isEmpty()) {
-      ManifestRequest manifestRequest = new ManifestRequest(manifestUrl);
-      Manifest manifest = manifestRequest.parseManifest();
-      if (manifest != null) {
-        // Extract a simplified {@link MetadataJson} containing only essential metadata
-        MetadataJson metadataJson = new MetadataJson(manifest);
-        // Write MetadataJson to filesystem
-        try {
-          metadataJson.saveToFile(jobDirectoryString, "manifest_metadata.json");
-        } catch (IOException e) {
-          LOGGER.error("Failed to save manifest metadata JSON to filesystem");
-          e.printStackTrace();
-        }
-        List<Sequence> sequences = manifest.getSequences();
-        if (sequences != null && sequences.size() != 0) {
-          for (Sequence sequence : sequences) {
-            List<Canvas> canvases = sequence.getCanvases();
-            if (canvases != null && canvases.size() != 0) {
-              // TODO loop restricted to 5 images during development
-              for (int i = 0; i < Math.min(5, canvases.size()); i++) {
-                final Canvas canvas = canvases.get(i);
-                List<Image> images = canvas.getImages();
-                if (images != null && images.size() != 0) {
-                  final int canvasIndex = i;
-                  // Download all images in the canvas
-                  images.forEach(image -> {
-                    String imageApiUrl = image.getResource().getAtId();
-                    // Make image request to remote server
-                    ImageRequest imageRequest = ImageRequest.fromUrl(imageApiUrl);
-                    // Write the downloaded image to the filesystem
-                    LOGGER.info("Trying to save image to file system: " + image);
-                    try {
-                      imageRequest.saveToFile(jobDirectoryString, "manifest_image_" + canvasIndex, imageApiUrl);
-                    } catch (IOException e) {
-                      LOGGER.error("Failed to save image to file system: " + image);
-                      e.printStackTrace();
-                    }
-                  });
-                }
-              }
-            }
-          }
-        }
-      } else {
-        LOGGER.error("Null manifest received from the server. Url: " + manifestUrl);
+    if (manifestUrl != null && !manifestUrl.isEmpty()) {
+      ManifestFactory manifestFactory = null;
+      try {
+        manifestFactory = new ManifestFactory(manifestUrl);
+      } catch (Exception e) {
+        LOGGER.error(e.getMessage());
+        e.printStackTrace();
+      }
+      if (manifestFactory != null) {
+        manifestFactory.saveMetadataJson(jobDirectoryString, "manifest_metadata.json");
+        manifestFactory.saveAllCanvasImages(jobDirectoryString, "manifest_image_");
       }
     }
   }
