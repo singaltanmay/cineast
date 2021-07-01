@@ -137,7 +137,7 @@ public class ImageRequestFactory {
           }
         }
         // Write the downloaded image to the filesystem
-        LOGGER.info("Trying to save image to file system: " + image);
+        LOGGER.info("Downloading and saving image to the filesystem: " + image);
         try {
           imageRequest.saveToFile(jobDirectoryString, itemPrefixString + canvas.getLabel(), imageApiUrl);
         } catch (IOException e) {

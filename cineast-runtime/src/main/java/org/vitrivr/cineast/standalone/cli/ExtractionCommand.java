@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vitrivr.cineast.core.config.DatabaseConfig;
@@ -136,8 +137,14 @@ public class ExtractionCommand implements Runnable {
         e.printStackTrace();
       }
       if (manifestFactory != null) {
-        manifestFactory.saveMetadataJson(jobDirectoryString, "manifest_metadata.json");
-        manifestFactory.saveAllCanvasImages(jobDirectoryString, "manifest_image_");
+        String jobIdentifier = UUID.randomUUID().toString();
+        String manifestJobDirectoryString = jobDirectoryString + "/manifest_job_" + jobIdentifier;
+        Path manifestJobDirectory = Paths.get(manifestJobDirectoryString);
+        if (!Files.exists(manifestJobDirectory)) {
+          Files.createDirectories(manifestJobDirectory);
+        }
+        manifestFactory.saveMetadataJson(manifestJobDirectoryString, "metadata_" + jobIdentifier);
+        manifestFactory.saveAllCanvasImages(manifestJobDirectoryString, "image_" + jobIdentifier + "_");
       }
     }
   }
